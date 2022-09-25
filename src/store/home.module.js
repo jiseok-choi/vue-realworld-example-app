@@ -1,17 +1,24 @@
-import { TagsService, ArticlesService } from "@/common/api.service";
-import { FETCH_ARTICLES, FETCH_TAGS } from "./actions.type";
+import {
+  TagsService,
+  ArticlesService,
+  HistoryService
+} from "@/common/api.service";
+import { FETCH_ARTICLES, FETCH_HISTORY, FETCH_TAGS } from "./actions.type";
 import {
   FETCH_START,
   FETCH_END,
   SET_TAGS,
-  UPDATE_ARTICLE_IN_LIST
+  UPDATE_ARTICLE_IN_LIST,
+  SET_HISTORY
 } from "./mutations.type";
 
 const state = {
   tags: [],
   articles: [],
   isLoading: true,
-  articlesCount: 0
+  articlesCount: 0,
+  history: [],
+  historyCount: 0
 };
 
 const getters = {
@@ -26,6 +33,12 @@ const getters = {
   },
   tags(state) {
     return state.tags;
+  },
+  history(state) {
+    return state.history;
+  },
+  historyCount(state) {
+    return state.historyCount;
   }
 };
 
@@ -44,6 +57,15 @@ const actions = {
     return TagsService.get()
       .then(({ data }) => {
         commit(SET_TAGS, data.tags);
+      })
+      .catch(error => {
+        throw new Error(error);
+      });
+  },
+  [FETCH_HISTORY]({ commit }) {
+    return HistoryService.get()
+      .then(({ data }) => {
+        commit(SET_HISTORY, data);
       })
       .catch(error => {
         throw new Error(error);
@@ -76,6 +98,10 @@ const mutations = {
       article.favoritesCount = data.favoritesCount;
       return article;
     });
+  },
+  [SET_HISTORY](state, { history, historyCount }) {
+    state.history = history;
+    state.historyCount = historyCount;
   }
 };
 
